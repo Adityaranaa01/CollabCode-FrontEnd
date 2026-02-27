@@ -1,136 +1,154 @@
-🚀 CollabCode — Frontend
+# CollabCode — Frontend
 
 Real-time collaborative coding platform built with a production-grade frontend architecture.
 
-CollabCode is a real-time collaborative coding platform with a modern SaaS-style interface.
-This repository contains the Next.js 14 frontend application, responsible for:
+This repository contains the Next.js 14 frontend application for CollabCode — handling authentication flows, dashboard UI, real-time collaboration workspace, and WebSocket integration.
 
-Authentication flows
+> **Backend Repository:** [CollabCode Backend](https://github.com/Adityaranaa01/CollabCode-Backend)
 
-Dashboard and room management UI
+---
 
-Real-time collaboration interface
+## Features
 
-WebSocket integration
+- Cinematic marketing landing page
+- Split-layout authentication (login / signup)
+- Workspace dashboard with room cards
+- Real-time collaboration room (editor + chat + participants)
+- Live presence tracking
+- Optimistic concurrency integration
+- Plan-aware UI restrictions
+- Custom dark-first design system
 
-Design system implementation
+---
 
-The backend (Express + Prisma + PostgreSQL + Socket.io) is maintained separately:
+## Tech Stack
 
-👉 Backend Repository:
-https://github.com/Adityaranaa01/CollabCode-Backend
+- [Next.js 14](https://nextjs.org/) — App Router
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Socket.io Client](https://socket.io/) — Real-time communication
+- [Lucide React](https://lucide.dev/) — Icons
+- `next/font` — Inter + JetBrains Mono
 
-✨ Features
-
-Cinematic landing page
-
-Split-layout authentication
-
-Workspace dashboard
-
-Real-time collaboration room
-
-Live presence tracking
-
-Chat panel
-
-Optimistic concurrency integration
-
-Plan-aware UI restrictions
-
-🧱 Tech Stack
-
-Next.js 14 (App Router)
-
-TypeScript
-
-Tailwind CSS
-
-socket.io-client
-
-Lucide React
-
-next/font (Inter + JetBrains Mono)
-
-No UI frameworks.
-No component libraries.
-No global state libraries.
-
+No UI frameworks. No component libraries. No global state libraries.
 All UI built from scratch.
 
-🔐 Authentication Integration
+---
 
-The frontend integrates with a JWT-based backend system:
+## Authentication Integration
 
-15-minute access tokens (stored in memory)
+The frontend integrates with a JWT-based backend auth system:
 
-7-day rotating refresh tokens (HTTP-only cookie)
-
-Automatic refresh on reconnect
-
-Protected route handling via AuthContext
+| Concern | Implementation |
+|---------|---------------|
+| Access Token | 15-min JWT, stored **in memory** (React state) |
+| Refresh Token | 7-day JWT, stored as **HTTP-only cookie** by backend |
+| Token Refresh | Automatic on app load and periodic silent refresh |
+| Route Protection | `ProtectedRoute` component via `AuthContext` |
+| API Requests | All use `credentials: "include"` |
 
 No localStorage token persistence.
 
-⚡ Real-Time Collaboration
+---
 
-Room collaboration uses:
+## Real-Time Collaboration
 
-WebSocket connection via Socket.io
+Room collaboration integrates with the backend WebSocket server:
 
-Optimistic concurrency model
+- **WebSocket connection** via Socket.io with JWT handshake auth
+- **Optimistic concurrency** — version-based conflict detection
+- **Automatic resync** on version mismatch
+- **Presence tracking** — live participant list
+- **Chat broadcasting** — real-time message delivery
 
-Version-based conflict detection
+No CRDT (intentional architectural tradeoff).
 
-Automatic resync on mismatch
+---
 
-Presence tracking
+## Pages
 
-Chat broadcasting
+| Route | Description |
+|-------|-------------|
+| `/` | Marketing landing page with animated hero |
+| `/auth` | Split-layout login / signup experience |
+| `/dashboard` | Room listing, creation, and management |
+| `/room/[id]` | Real-time collaboration workspace |
+| `/not-found` | Custom 404 page |
 
-No CRDT used (intentional architectural tradeoff).
+---
 
-🖥️ Pages
-Route	Description
-/	Marketing landing page
-/auth	Login / Signup experience
-/dashboard	Room listing & creation
-/room/[id]	Real-time collaboration workspace
-/not-found	Custom 404 page
-🎨 Design System
+## Design System
 
-Custom dark-first design system.
+Custom dark-first design system — no third-party UI libraries.
 
-Primary Colors
+**Colors**
 
-Background: #050308
+| Token | Value |
+|-------|-------|
+| Background | `#050308` |
+| Surface | `#0d0a14` |
+| Primary Purple | `#8B5CF6` |
+| Accent Dark | `#16121f` |
 
-Surface: #0d0a14
+**Typography**
 
-Primary Purple: #8B5CF6
+| Usage | Font |
+|-------|------|
+| UI | Inter |
+| Code | JetBrains Mono |
 
-Accent Dark: #16121f
+**Animations** — cursor blink, pulse-dot, float, fade-up, typing dots, live pulse glow. All handcrafted CSS, no animation libraries.
 
-Typography
+---
 
-UI: Inter
+## Folder Structure
 
-Code: JetBrains Mono
-
-All animations handcrafted (no animation libraries).
-
-📦 Folder Structure
+```
 src/
- ├── app/
- ├── components/
- ├── lib/
- │   └── socket/
- ├── context/
- └── styles/
-🚀 Getting Started
+ ├── app/              # Pages and layouts (App Router)
+ │   ├── auth/         # Login / Signup
+ │   ├── dashboard/    # Room management
+ │   ├── room/[id]/    # Collaboration workspace
+ │   └── layout.tsx    # Root layout + AuthProvider
+ ├── components/       # Reusable UI components
+ ├── contexts/         # AuthContext provider
+ ├── lib/              # API client, utilities
+ └── app/globals.css   # Design system + animations
+```
+
+---
+
+## Getting Started
+
+```bash
 npm install
 npm run dev
+```
 
-Frontend expects backend running at:
+Create a `.env.local` file:
 
-NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
+
+Frontend expects the backend running at the configured URL.
+
+---
+
+## Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Logo` | Brand mark |
+| `Navbar` | Navigation with auth state |
+| `Footer` | Site footer |
+| `GlassCard` | Glassmorphism card component |
+| `RoomCard` | Room preview card for dashboard |
+| `CreateRoomModal` | Room creation dialog |
+| `CodeEditor` | Code editing area |
+| `ChatPanel` | Real-time chat sidebar |
+| `ParticipantsList` | Live presence display |
+| `ProtectedRoute` | Auth-gated route wrapper |
+| `Input` | Styled form input |
+
+All components are fully typed and isolated.
