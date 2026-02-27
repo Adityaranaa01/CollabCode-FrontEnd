@@ -1,14 +1,46 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/Button";
 
 export default function LandingPage() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHoveringEditor, setIsHoveringEditor] = useState(false);
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({
+        x: (e.clientX / window.innerWidth - 0.5) * 20,
+        y: (e.clientY / window.innerHeight - 0.5) * 20,
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  const calculateTilt = () => {
+    if (!isHoveringEditor)
+      return { rotateX: -mousePos.y * 0.5, rotateY: mousePos.x * 0.5 };
+    return { rotateX: -mousePos.y * 1.5, rotateY: mousePos.x * 1.5 };
+  };
+
+  const tilt = calculateTilt();
+
   return (
     <div className="relative min-h-screen bg-[#050505] text-white overflow-x-hidden noise">
       {/* Cinematic Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-grid" />
+        <div className="absolute inset-0 bg-grid opacity-20" />
+        <div
+          className="absolute inset-0 transition-opacity duration-1000"
+          style={{
+            background: `radial-gradient(600px circle at ${50 + mousePos.x * 2}% ${50 + mousePos.y * 2}%, rgba(139, 92, 246, 0.15), transparent 80%)`,
+          }}
+        />
         <div className="absolute inset-0 glow-gradient" />
       </div>
 
@@ -35,7 +67,13 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative pt-40 pb-20 px-6 min-h-screen flex flex-col items-center overflow-hidden">
-        <div className="max-w-5xl mx-auto text-center z-10 animate-fade-up">
+        <div
+          className="max-w-5xl mx-auto text-center z-10 animate-fade-up"
+          style={{
+            transform: `translate3d(${mousePos.x * -0.8}px, ${mousePos.y * -0.8}px, 0)`,
+            transition: "transform 0.15s ease-out",
+          }}
+        >
           <h1 className="text-7xl md:text-9xl font-bold tracking-tight leading-[0.9] mb-8">
             Code together <br />
             <span className="text-zinc-500">without limits.</span>
@@ -46,19 +84,42 @@ export default function LandingPage() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/auth">
-              <Button variant="primary" size="lg">
-                Get Started
-              </Button>
+              <div
+                className="transition-transform duration-200"
+                style={{
+                  transform: `translate3d(${mousePos.x * 0.2}px, ${mousePos.y * 0.2}px, 0)`,
+                }}
+              >
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="hover:scale-105 transition-transform"
+                >
+                  Get Started
+                </Button>
+              </div>
             </Link>
           </div>
         </div>
 
         {/* 3D Perspective Editor Mockup */}
         <div
+          ref={editorRef}
+          onMouseEnter={() => setIsHoveringEditor(true)}
+          onMouseLeave={() => setIsHoveringEditor(false)}
           className="perspective-container mt-20 w-full max-w-6xl relative z-20 animate-fade-up"
-          style={{ animationDelay: "0.3s" }}
+          style={{
+            animationDelay: "0.3s",
+            perspective: "2000px",
+          }}
         >
-          <div className="animate-float glass rounded-xl shadow-2xl overflow-hidden border border-white/20 transform-gpu">
+          <div
+            className="glass rounded-xl shadow-2xl overflow-hidden border border-white/20 transform-gpu transition-transform duration-200 ease-out"
+            style={{
+              transform: `rotateX(${10 + tilt.rotateX}deg) rotateY(${-5 + tilt.rotateY}deg) translateZ(0)`,
+            }}
+          >
+            {" "}
             {/* Editor Header */}
             <div className="flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/10">
               <div className="flex gap-2">
@@ -78,16 +139,19 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-
             {/* Editor Content */}
             <div className="p-8 font-mono text-sm leading-relaxed flex">
               <div className="text-zinc-600 pr-6 text-right select-none">
-                1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11
+                1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />
+                10
+                <br />
+                11
               </div>
               <div className="relative w-full">
                 <div className="text-zinc-300">
                   <span className="text-purple-400">export const</span>{" "}
-                  <span className="text-blue-400">renderLoop</span> = () =&gt; &#123;
+                  <span className="text-blue-400">renderLoop</span> = () =&gt;
+                  &#123;
                   <br />
                   {"  "}
                   <span className="text-zinc-500">
@@ -184,7 +248,12 @@ export default function LandingPage() {
 
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-brand-purple/20 to-transparent blur-2xl opacity-50 group-hover:opacity-100 transition duration-1000" />
-            <div className="relative glass rounded-2xl overflow-hidden aspect-square flex items-center justify-center">
+            <div
+              className="relative glass rounded-2xl overflow-hidden aspect-square flex items-center justify-center transition-transform duration-500 ease-out"
+              style={{
+                transform: `perspective(1000px) rotateX(${mousePos.y * 0.1}deg) rotateY(${mousePos.x * -0.1}deg)`,
+              }}
+            >
               <div className="w-full h-full p-12 bg-[#0a0a0a]/80">
                 <div className="space-y-4 font-mono text-sm">
                   <div className="flex items-center gap-4 text-zinc-500 border-b border-white/10 pb-4 mb-8">
@@ -252,7 +321,12 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="md:w-2/3">
-            <div className="glass h-[600px] rounded-3xl relative overflow-hidden group">
+            <div
+              className="glass h-[600px] rounded-3xl relative overflow-hidden group transition-transform duration-500 ease-out"
+              style={{
+                transform: `perspective(1000px) rotateX(${mousePos.y * 0.15}deg) rotateY(${mousePos.x * -0.15}deg)`,
+              }}
+            >
               {/* Terminal Simulation */}
               <div className="absolute inset-0 p-8 font-mono text-sm">
                 <div className="text-green-500 mb-2">
