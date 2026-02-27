@@ -31,16 +31,9 @@ export default function LandingPage() {
   const tilt = calculateTilt();
 
   return (
-    <div className="relative min-h-screen bg-[#050505] text-white overflow-x-hidden noise">
+    <div className="relative min-h-screen bg-[#050505] text-white overflow-x-hidden">
       {/* Cinematic Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-grid opacity-20" />
-        <div
-          className="absolute inset-0 transition-opacity duration-1000"
-          style={{
-            background: `radial-gradient(600px circle at ${50 + mousePos.x * 2}% ${50 + mousePos.y * 2}%, rgba(139, 92, 246, 0.15), transparent 80%)`,
-          }}
-        />
         <div className="absolute inset-0 glow-gradient" />
       </div>
 
