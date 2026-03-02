@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { Input } from "@/components/Input";
@@ -18,9 +18,20 @@ export default function AuthPageClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, register, isAuthenticated } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Handle mode from query params
+  useEffect(() => {
+    const mode = searchParams.get("mode");
+    if (mode === "signup") {
+      setActiveTab("signup");
+    } else if (mode === "login") {
+      setActiveTab("login");
+    }
+  }, [searchParams]);
 
   // Redirect if already logged in
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated) {
       router.replace("/dashboard");
     }
@@ -148,7 +159,10 @@ export default function AuthPageClient() {
               {/* Tab Toggle */}
               <div className="flex p-1 bg-white/5 m-4 rounded-lg border border-white/5">
                 <button
-                  onClick={() => { setActiveTab("login"); setError(""); }}
+                  onClick={() => {
+                    setActiveTab("login");
+                    setError("");
+                  }}
                   className={`flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200 cursor-pointer ${
                     activeTab === "login"
                       ? "bg-white/10 text-white shadow-sm"
@@ -158,7 +172,10 @@ export default function AuthPageClient() {
                   Login
                 </button>
                 <button
-                  onClick={() => { setActiveTab("signup"); setError(""); }}
+                  onClick={() => {
+                    setActiveTab("signup");
+                    setError("");
+                  }}
                   className={`flex-1 py-2 text-sm font-medium transition-all duration-200 cursor-pointer ${
                     activeTab === "signup"
                       ? "bg-white/10 text-white shadow-sm rounded-md"
@@ -169,7 +186,10 @@ export default function AuthPageClient() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="px-6 pb-8 pt-2 flex flex-col gap-5">
+              <form
+                onSubmit={handleSubmit}
+                className="px-6 pb-8 pt-2 flex flex-col gap-5"
+              >
                 {/* Error Banner */}
                 {error && (
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium">
@@ -281,19 +301,19 @@ export default function AuthPageClient() {
           {/* Footer */}
           <p className="text-center lg:text-left text-[12px] text-slate-500 leading-relaxed">
             By signing in, you agree to our{" "}
-            <a
-              href="#"
+            <Link
+              href="/terms"
               className="text-slate-300 hover:text-primary transition-colors"
             >
               Terms of Service
-            </a>{" "}
+            </Link>{" "}
             and{" "}
-            <a
-              href="#"
+            <Link
+              href="/privacy"
               className="text-slate-300 hover:text-primary transition-colors"
             >
               Privacy Policy
-            </a>
+            </Link>
             .
           </p>
         </div>

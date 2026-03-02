@@ -150,20 +150,26 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-    <div className="flex h-screen overflow-hidden bg-background-dark">
+    <div className="flex h-screen overflow-hidden bg-[#050308]">
       <Sidebar activeItem="Rooms" onCreateRoom={() => setIsModalOpen(true)} />
 
-      <main className="flex-1 flex flex-col overflow-hidden bg-background-dark">
-        <header className="h-16 flex items-center justify-between px-8 bg-[#050308]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-50">
-          <div className="flex items-center gap-6">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">
-              Workspace / <span className="text-slate-200">Rooms</span>
-            </h2>
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
+      <main className="flex-1 flex flex-col overflow-hidden bg-[#050308] relative">
+        {/* Background Ambient Glows */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <header className="h-16 flex items-center justify-between px-8 bg-[#050308]/60 backdrop-blur-xl border-b border-white/[0.04] sticky top-0 z-50">
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Workspace</span>
+              <span className="text-slate-700">/</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-200">Rooms</span>
+            </div>
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-3.5 h-3.5 group-focus-within:text-primary transition-colors" />
               <input
-                className="w-full pl-9 pr-4 py-1.5 bg-white/[0.03] border border-white/5 rounded-lg text-xs focus:ring-1 focus:ring-primary/50 outline-none transition-all placeholder:text-slate-600"
-                placeholder="Search rooms..."
+                className="w-72 pl-10 pr-4 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-xs focus:ring-1 focus:ring-primary/40 focus:border-primary/40 focus:bg-white/[0.05] outline-none transition-all placeholder:text-slate-600 shadow-inner"
+                placeholder="Search projects..."
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -171,67 +177,71 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-4 relative" ref={menuRef}>
-            <button
-              onClick={() => setShowUserMenu((v) => !v)}
-              className="size-8 rounded-full bg-slate-800 border border-white/5 overflow-hidden flex items-center justify-center text-[10px] font-bold cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
-            >
-              {initials}
-            </button>
+            <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors cursor-pointer" onClick={() => setShowUserMenu((v) => !v)}>
+              <span className="text-xs font-medium text-slate-300 hidden md:block">{user?.displayName?.split(" ")[0]}</span>
+              <button
+                className="size-7 rounded-full bg-gradient-to-br from-primary to-purple-600 border border-white/10 overflow-hidden flex items-center justify-center text-[10px] font-bold text-white shadow-lg"
+              >
+                {initials}
+              </button>
+            </div>
 
             {showUserMenu && (
-              <div className="absolute right-0 top-full mt-2 w-56 bg-[#0d0a14] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-4 py-3 border-b border-white/5">
-                  <p className="text-sm font-semibold text-white truncate">{user?.displayName}</p>
-                  <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+              <div className="absolute right-0 top-full mt-3 w-64 bg-[#0d0a14] border border-white/[0.08] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-200">
+                <div className="px-5 py-4 border-b border-white/[0.04] bg-white/[0.02]">
+                  <p className="text-sm font-bold text-white truncate">{user?.displayName}</p>
+                  <p className="text-xs text-slate-500 truncate mt-0.5">{user?.email}</p>
                 </div>
-                <button
-                  onClick={async () => {
-                    setShowUserMenu(false);
-                    await logout();
-                    router.push("/auth");
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Log out
-                </button>
+                <div className="p-2">
+                  <button
+                    onClick={async () => {
+                      setShowUserMenu(false);
+                      await logout();
+                      router.push("/auth");
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-colors cursor-pointer group"
+                  >
+                    <div className="size-8 rounded-lg bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
+                      <LogOut className="w-4 h-4" />
+                    </div>
+                    <span className="font-medium">Sign out</span>
+                  </button>
+                </div>
               </div>
             )}
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
-          <div className="max-w-[1400px] mx-auto p-8">
-            <div className="flex items-end justify-between mb-12">
-              <div className="space-y-1">
-                <h1 className="text-3xl font-bold tracking-tight">
-                  Welcome back, {user?.displayName?.split(" ")[0] || "there"}.
+        <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
+          <div className="max-w-[1400px] mx-auto p-10">
+            <div className="flex items-center justify-between mb-16">
+              <div className="space-y-2">
+                <h1 className="text-4xl font-black tracking-tight text-white flex items-center gap-3">
+                  Hi, {user?.displayName?.split(" ")[0] || "there"}
+                  <span className="inline-block animate-bounce text-2xl">👋</span>
                 </h1>
-                <p className="text-slate-500 text-sm font-medium">
-                  You have{" "}
-                  <span className="text-primary">{totalRooms} {totalRooms === 1 ? "room" : "rooms"}</span>{" "}
-                  and{" "}
-                  <span className="text-slate-300">{totalMembers} {totalMembers === 1 ? "collaborator" : "collaborators"}</span>{" "}
-                  total.
+                <p className="text-slate-400 text-sm font-medium flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#895af6]" />
+                  Managing <span className="text-slate-200 font-bold">{totalRooms} projects</span> with <span className="text-slate-200 font-bold">{totalMembers} collaborators</span>.
                 </p>
               </div>
               <Button
                 variant="primary"
-                size="md"
-                className="!shadow-none font-bold tracking-wide uppercase text-[11px]"
+                size="lg"
+                className="!shadow-[0_10px_30px_-10px_rgba(137,90,246,0.6)] font-bold tracking-wider uppercase text-[11px] px-8 rounded-2xl"
                 onClick={() => setIsModalOpen(true)}
               >
                 <PlusCircle className="w-4 h-4" />
-                Create Room
+                Start New Room
               </Button>
             </div>
 
-            <div className="flex gap-8 border-b border-white/5 mb-8">
+            <div className="flex gap-10 border-b border-white/[0.04] mb-10">
               {filters.map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={`pb-4 text-sm font-medium transition-all relative cursor-pointer ${
+                  className={`pb-5 text-xs font-black uppercase tracking-[0.15em] transition-all relative cursor-pointer ${
                     activeFilter === filter
                       ? "text-primary"
                       : "text-slate-500 hover:text-slate-300"
@@ -239,7 +249,7 @@ export default function DashboardPage() {
                 >
                   {filter}
                   {activeFilter === filter && (
-                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary" />
+                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_#895af6] rounded-full" />
                   )}
                 </button>
               ))}

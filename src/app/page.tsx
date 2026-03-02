@@ -44,13 +44,13 @@ export default function LandingPage() {
         </div>
         <div className="flex gap-8 items-center">
           <Link
-            href="#"
+            href="/auth?mode=signup"
             className="text-sm text-zinc-400 hover:text-white transition-colors"
           >
-            Documentation
+            Sign Up
           </Link>
           <Link
-            href="/auth"
+            href="/auth?mode=login"
             className="px-5 py-2 rounded-full glass text-sm font-medium hover:bg-white/10 transition-all"
           >
             Log In
@@ -106,106 +106,168 @@ export default function LandingPage() {
             perspective: "2000px",
           }}
         >
-          <div
-            className="glass rounded-xl shadow-2xl overflow-hidden border border-white/20 transform-gpu transition-transform duration-200 ease-out"
-            style={{
-              transform: `rotateX(${10 + tilt.rotateX}deg) rotateY(${-5 + tilt.rotateY}deg) translateZ(0)`,
-            }}
-          >
-            {" "}
-            {/* Editor Header */}
-            <div className="flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/10">
-              <div className="flex gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-                <div className="w-3 h-3 rounded-full bg-green-500/50" />
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-[10px] tracking-widest uppercase text-zinc-500">
-                  lib/engine/renderer.ts
-                </span>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-brand-purple/20 border border-brand-purple/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
-                  <span className="text-[10px] text-brand-purple font-bold tracking-wide">
-                    LIVE
+          <div className="animate-idle-float transform-gpu">
+            <div
+              className="glass rounded-xl shadow-2xl overflow-hidden border border-white/20 transform-gpu transition-transform duration-200 ease-out"
+              style={{
+                transform: `rotateX(${10 + tilt.rotateX}deg) rotateY(${-5 + tilt.rotateY}deg) translateZ(0)`,
+              }}
+            >
+              {/* Editor Header */}
+              <div className="flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/10">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] tracking-widest uppercase text-zinc-500">
+                    lib/engine/renderer.ts
                   </span>
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-brand-purple/20 border border-brand-purple/30">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
+                    <span className="text-[10px] text-brand-purple font-bold tracking-wide">
+                      LIVE
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-            {/* Editor Content */}
-            <div className="p-8 font-mono text-sm leading-relaxed flex">
-              <div className="text-zinc-600 pr-6 text-right select-none">
-                1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />
-                10
-                <br />
-                11
-              </div>
-              <div className="relative w-full">
-                <div className="text-zinc-300">
-                  <span className="text-purple-400">export const</span>{" "}
-                  <span className="text-blue-400">renderLoop</span> = () =&gt;
-                  &#123;
+              {/* Editor Content */}
+              <div className="p-8 font-mono text-sm leading-relaxed flex">
+                <div className="text-zinc-600 pr-6 text-right select-none">
+                  1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9
                   <br />
-                  {"  "}
-                  <span className="text-zinc-500">
-                    {"// Initialize GPU interface"}
-                  </span>
+                  10
                   <br />
-                  {"  "}
-                  <span className="text-purple-400">const</span> pipeline ={" "}
-                  <span className="text-yellow-200">await</span>{" "}
-                  createPipeline();
-                  <br />
-                  <br />
-                  {"  "}
-                  <span className="text-purple-400">return</span> &#123;
-                  <br />
-                  {"    "}draw: (ctx) =&gt; &#123;
-                  <br />
-                  {"      "}
-                  <span className="relative">
-                    ctx.clearColor(0, 0, 0, 1);
-                    {/* Blue Cursor */}
-                    <span className="absolute -top-1 left-0 h-5 w-[2px] bg-blue-500 animate-blink">
-                      <span className="absolute -top-5 left-0 px-1.5 py-0.5 bg-blue-500 text-[10px] text-white rounded-sm font-sans whitespace-nowrap">
-                        Alex
+                  11
+                </div>
+                <div className="relative w-full">
+                  <div className="text-zinc-300">
+                    <span className="text-purple-400">export const</span>{" "}
+                    <span className="text-blue-400">renderLoop</span> = () =&gt;
+                    &#123;
+                    <br />
+                    {"  "}
+                    <span className="text-zinc-500">
+                      {"// Initialize GPU interface"}
+                    </span>
+                    <br />
+                    {"  "}
+                    <span className="text-purple-400">const</span> pipeline ={" "}
+                    <span className="text-yellow-200">await</span>{" "}
+                    createPipeline();
+                    <br />
+                    <br />
+                    {"  "}
+                    <span className="text-purple-400">return</span> &#123;
+                    <br />
+                    {"    "}draw: (ctx) =&gt; &#123;
+                    <br />
+                    {"      "}
+                    <span className="relative">
+                      ctx.clearColor(0, 0, 0, 1);
+                      {/* Blue Cursor */}
+                      <span className="absolute -top-1 left-0 h-5 w-[2px] bg-blue-500 animate-blink">
+                        <span className="absolute -top-5 left-0 px-1.5 py-0.5 bg-blue-500 text-[10px] text-white rounded-sm font-sans whitespace-nowrap">
+                          Alex
+                        </span>
                       </span>
                     </span>
-                  </span>
-                  <br />
-                  {"      "}pipeline.execute(ctx);
-                  <br />
-                  {"    "}&#125;
-                  <br />
-                  {"  "}&#125;
-                  <br />
-                  &#125;
-                </div>
+                    <br />
+                    {"      "}pipeline.execute(ctx);
+                    <br />
+                    {"    "}&#125;
+                    <br />
+                    {"  "}&#125;
+                    <br />
+                    &#125;
+                  </div>
 
-                {/* Purple Cursor */}
-                <div className="absolute top-24 left-1/3 h-5 w-[2px] bg-brand-purple animate-blink">
-                  <span className="absolute -top-5 left-0 px-1.5 py-0.5 bg-brand-purple text-[10px] text-white rounded-sm font-sans whitespace-nowrap">
-                    Sarah
-                  </span>
-                </div>
+                  {/* Purple Cursor */}
+                  <div className="absolute top-24 left-1/3 h-5 w-[2px] bg-brand-purple animate-blink">
+                    <span className="absolute -top-5 left-0 px-1.5 py-0.5 bg-brand-purple text-[10px] text-white rounded-sm font-sans whitespace-nowrap">
+                      Sarah
+                    </span>
+                  </div>
 
-                {/* Chat Bubble Overlay */}
-                <div className="absolute bottom-0 right-0 glass p-4 rounded-xl max-w-xs shadow-xl border border-white/20 -mr-10 -mb-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-brand-purple flex-shrink-0 flex items-center justify-center text-xs font-bold">
-                      S
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold mb-1">Sarah</p>
-                      <p className="text-xs text-zinc-400 leading-snug">
-                        The pipeline execution seems much faster with the new
-                        buffer approach. 🔥
-                      </p>
+                  {/* Chat Bubble Overlay */}
+                  <div className="absolute bottom-0 right-0 glass p-4 rounded-xl max-w-xs shadow-xl border border-white/20 -mr-10 -mb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-brand-purple flex-shrink-0 flex items-center justify-center text-xs font-bold">
+                        S
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold mb-1">Sarah</p>
+                        <p className="text-xs text-zinc-400 leading-snug">
+                          The pipeline execution seems much faster with the new
+                          buffer approach. 🔥
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Supported Languages Loop */}
+        <div className="mt-32 w-full max-w-5xl mx-auto overflow-hidden relative py-10">
+          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10" />
+          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#050505] to-transparent z-10" />
+
+          <div className="flex animate-marquee whitespace-nowrap gap-8">
+            {[
+              "JavaScript",
+              "TypeScript",
+              "Python",
+              "Go",
+              "Rust",
+              "Java",
+              "C++",
+              "C#",
+              "PHP",
+              "Ruby",
+              "Kotlin",
+              "Swift",
+              "Bash",
+              "SQL",
+              "HTML",
+              "CSS",
+            ].map((lang) => (
+              <div
+                key={lang}
+                className="px-6 py-2 rounded-full border border-white/10 bg-white/5 text-zinc-400 text-sm font-medium hover:border-brand-purple/50 hover:text-white hover:bg-brand-purple/10 transition-all cursor-default"
+              >
+                {lang}
+              </div>
+            ))}
+            {/* Duplicate for infinite loop */}
+            {[
+              "JavaScript",
+              "TypeScript",
+              "Python",
+              "Go",
+              "Rust",
+              "Java",
+              "C++",
+              "C#",
+              "PHP",
+              "Ruby",
+              "Kotlin",
+              "Swift",
+              "Bash",
+              "SQL",
+              "HTML",
+              "CSS",
+            ].map((lang) => (
+              <div
+                key={`${lang}-clone`}
+                className="px-6 py-2 rounded-full border border-white/10 bg-white/5 text-zinc-400 text-sm font-medium hover:border-brand-purple/50 hover:text-white hover:bg-brand-purple/10 transition-all cursor-default"
+              >
+                {lang}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -353,24 +415,39 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-20 px-6 border-t border-white/5">
+      <footer className="py-20 px-6 border-t border-white/5 bg-[#050505]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
           <div className="text-xl font-bold tracking-tighter">
             COLLABCODE<span className="text-brand-purple">.</span>
           </div>
-          <div className="flex gap-10 text-zinc-500 text-sm">
-            {["GitHub", "Twitter", "Discord", "Status"].map((item) => (
-              <Link
-                key={item}
-                href="#"
-                className="hover:text-white transition-colors"
-              >
-                {item}
-              </Link>
-            ))}
+          <div className="flex gap-12 text-zinc-500 text-sm font-medium">
+            <a
+              href="https://github.com/Adityaranaa01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-brand-purple transition-all duration-300"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://x.com/AdityaRaNaa01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-brand-purple transition-all duration-300"
+            >
+              Twitter
+            </a>
+            <a
+              href="https://www.linkedin.com/in/aditya-piyush-36b7a0260/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-brand-purple transition-all duration-300"
+            >
+              LinkedIn
+            </a>
           </div>
-          <div className="text-zinc-600 text-xs uppercase tracking-widest">
-            © 2024 CollabCode Inc.
+          <div className="text-zinc-600 text-[10px] uppercase tracking-[0.2em] font-bold">
+            © 2026 CollabCode Inc.
           </div>
         </div>
       </footer>
