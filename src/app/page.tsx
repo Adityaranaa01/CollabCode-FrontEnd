@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Component as Globe } from "@/components/ui/interactive-globe";
-import { User, LogOut, Sun, Moon, Zap, Code, Users } from "lucide-react";
+import { User, LogOut, Sun, Moon, Zap, Code, Users, LayoutDashboard } from "lucide-react";
 import { div } from "framer-motion/client";
 
 
@@ -108,7 +108,11 @@ const NavButtons = ({ isDark, onToggle }: { isDark: boolean; onToggle: () => voi
 
           {showDropdown && (
             <div className="absolute right-0 mt-3 w-48 bg-popover border border-border rounded-xl shadow-xl overflow-hidden z-[150] animate-in fade-in zoom-in-95 duration-200">
-              <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-sm text-foreground/70 hover:text-primary hover:bg-primary/5 transition-all group">
+              <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-sm text-foreground/70 hover:text-primary hover:bg-primary/5 transition-all group">
+                <LayoutDashboard className="w-4 h-4 opacity-40 group-hover:opacity-100" />
+                <span className="font-bold">Dashboard</span>
+              </Link>
+              <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-sm text-foreground/70 hover:text-primary hover:bg-primary/5 transition-all group border-t border-border">
                 <User className="w-4 h-4 opacity-40 group-hover:opacity-100" />
                 <span className="font-bold">Profile</span>
               </Link>
