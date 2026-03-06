@@ -34,7 +34,7 @@ export const Logo: React.FC<LogoProps> = ({
         </div>
       )}
       <h1
-        className={`${sizeMap[size]} font-bold tracking-tight uppercase text-white`}
+        className={`${sizeMap[size]} font-bold tracking-tight uppercase text-foreground`}
       >
         COLLABCODE<span className="text-primary">.</span>
       </h1>

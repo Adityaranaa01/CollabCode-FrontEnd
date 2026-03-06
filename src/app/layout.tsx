@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { CursorGlow } from "@/components/CursorGlow";
 
 export const metadata: Metadata = {
   title: "CollabCode | Code together without limits.",
@@ -18,6 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <ThemeProvider>
+          <CursorGlow />
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
       </body>

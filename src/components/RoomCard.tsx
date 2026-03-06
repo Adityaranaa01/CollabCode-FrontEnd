@@ -67,8 +67,8 @@ export const RoomCard: React.FC<RoomCardProps> = ({
               </div>
             )}
             <div className="flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-[#5eead4]/20" />
-              <span className="text-[10px] text-[#5eead4]/30 font-black uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+              <span className="text-[10px] text-foreground/40 font-black uppercase tracking-widest">
                 {onlineCount} {onlineCount === 1 ? "Peer" : "Peers"}
               </span>
             </div>

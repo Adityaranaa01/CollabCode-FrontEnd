@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Component as Globe } from "@/components/ui/interactive-globe";
 import { User, LogOut, Sun, Moon, Zap, Code, Users } from "lucide-react";
+import { div } from "framer-motion/client";
 
 // --- Components ---
 
@@ -243,7 +244,7 @@ export default function LandingPage() {
           ${scrolled ? 'bg-background/80 shadow-lg scale-95' : 'bg-background/92'}`}>
           <div className="flex items-center gap-2 pr-4 border-r border-border">
             <div className="size-7 bg-primary rounded-md flex items-center justify-center font-black text-primary-foreground text-sm">C</div>
-            <span className="text-sm font-black tracking-tighter uppercase whitespace-nowrap">CollabCode</span>
+            <span className="text-sm font-black tracking-tighter uppercase whitespace-nowrap text-foreground">CollabCode</span>
           </div>
           <div className="hidden md:flex gap-8 items-center text-xs font-bold uppercase tracking-widest text-foreground/60">
              <a href="#features" className="hover:text-primary transition-colors">Features</a>
@@ -289,10 +290,10 @@ export default function LandingPage() {
                 markerColor={isDark ? "#c084fc" : "#7c3aed"}
                 className="opacity-90 transition-all duration-1000"
               />
-              <div className="absolute bottom-1/4 -left-20 p-6 bg-card rounded-2xl border border-border shadow-2xl animate-bounce duration-[3s] z-[50]">
+              {/* <div className="absolute bottom-1/4 -left-20 p-6 bg-card rounded-2xl border border-border shadow-2xl animate-bounce duration-[3s] z-[50]">
                 <div className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest mb-1">Global Latency</div>
                 <div className="text-3xl font-black text-primary">12.4ms</div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -373,7 +374,7 @@ export default function LandingPage() {
             <div className="col-span-2">
               <div className="flex items-center gap-2 mb-8">
                 <div className="size-8 bg-primary rounded-lg flex items-center justify-center font-black text-primary-foreground text-xl">C</div>
-                <span className="text-xl font-black tracking-tighter uppercase whitespace-nowrap">CollabCode</span>
+                <span className="text-xl font-black tracking-tighter uppercase whitespace-nowrap text-foreground">CollabCode</span>
               </div>
               <p className="text-foreground/60 font-medium max-w-xs mb-10 leading-relaxed">The high-performance collaborative workspace for engineering teams. Built for speed, security, and scale.</p>
               <div className="text-[10px] font-black text-primary tracking-[0.3em] uppercase">Built for engineers, by engineers.</div>

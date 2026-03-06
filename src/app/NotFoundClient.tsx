@@ -8,9 +8,9 @@ import { SearchX } from "lucide-react";
 
 export default function NotFoundClient() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background-dark">
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background">
       {/* Navigation Header */}
-      <header className="flex items-center justify-between border-b border-primary/20 px-6 md:px-10 py-4 bg-background-dark/50 backdrop-blur-sm sticky top-0 z-50">
+      <header className="flex items-center justify-between border-b border-primary/20 px-6 md:px-10 py-4 bg-background/50 backdrop-blur-sm sticky top-0 z-50">
         <Link href="/">
           <Logo size="md" showIcon />
         </Link>
@@ -56,7 +56,7 @@ export default function NotFoundClient() {
 
           {/* Error Message */}
           <div className="space-y-4 max-w-md">
-            <h2 className="text-slate-100 text-3xl md:text-4xl font-bold tracking-tight">
+            <h2 className="text-foreground text-3xl md:text-4xl font-bold tracking-tight">
               Looks like you&apos;re lost in the codebase.
             </h2>
             <p className="text-slate-400 text-base md:text-lg">
@@ -89,7 +89,7 @@ export default function NotFoundClient() {
           {/* Decorative Element */}
           <div className="mt-16 w-full max-w-lg aspect-video rounded-xl border border-primary/20 bg-primary/5 p-2 relative group">
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-xl" />
-            <div className="w-full h-full rounded-lg overflow-hidden border border-primary/10 flex items-center justify-center bg-background-dark relative">
+            <div className="w-full h-full rounded-lg overflow-hidden border border-primary/10 flex items-center justify-center bg-background relative">
               <div className="flex flex-col items-center justify-center p-6">
                 <SearchX className="w-10 h-10 text-primary/40 mb-2" />
                 <p className="text-slate-400 text-sm font-mono uppercase tracking-widest">
@@ -102,7 +102,7 @@ export default function NotFoundClient() {
       </main>
 
       {/* Footer */}
-      <footer className="px-6 py-10 border-t border-primary/10 bg-background-dark/30">
+      <footer className="px-6 py-10 border-t border-primary/10 bg-background/30">
         <div className="max-w-[960px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-slate-400 text-sm">
             © 2024 COLLABCODE. Inc. All rights reserved.
