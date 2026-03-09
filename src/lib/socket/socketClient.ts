@@ -95,7 +95,6 @@ export function createRoomSocket(accessToken: string): CollabSocket {
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
-    transports: ["websocket"],
   });
 
   return socket;

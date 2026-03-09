@@ -730,6 +730,29 @@ export default function RoomClient() {
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+                Room ID
+              </label>
+              <div className="flex gap-2">
+                <input
+                  readOnly
+                  value={roomId}
+                  className="flex-1 bg-background/50 border border-border rounded-xl px-3 py-2 text-xs font-bold text-foreground outline-none truncate shadow-inner font-mono"
+                />
+                <button
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(roomId);
+                    } catch {}
+                  }}
+                  className="px-4 py-2 rounded-xl bg-foreground/5 text-foreground/60 border border-border hover:bg-foreground/10 transition-all cursor-pointer flex items-center gap-2 text-xs font-black uppercase tracking-widest shadow-sm"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  Copy
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                 Invite Link
               </label>
               <div className="flex gap-2">

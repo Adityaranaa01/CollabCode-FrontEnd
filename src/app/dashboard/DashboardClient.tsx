@@ -14,7 +14,7 @@ import {
   Button,
   ThemeToggle,
 } from "@/components";
-import { Search, PlusCircle, ChevronDown, LogOut, Loader2 } from "lucide-react";
+import { Search, PlusCircle, ChevronDown, LogOut, Loader2, UserPlus } from "lucide-react";
 
 const GRADIENTS = [
   "from-primary/20 to-accent/20",
@@ -51,6 +51,11 @@ export default function DashboardPage() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [joinInput, setJoinInput] = useState("");
+  const [joining, setJoining] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
 
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -104,6 +109,55 @@ export default function DashboardPage() {
       );
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function handleJoinRoom() {
+    if (!accessToken || !joinInput.trim()) return;
+
+    setJoining(true);
+    setJoinError(null);
+
+    const input = joinInput.trim();
+
+    try {
+      let roomId: string;
+
+      if (input.includes("/room/")) {
+        const parts = input.split("/room/");
+        const segment = parts[parts.length - 1];
+        roomId = segment.split("?")[0];
+
+        const urlParams = new URLSearchParams(segment.split("?")[1] || "");
+        const inviteToken = urlParams.get("invite");
+
+        if (inviteToken) {
+          await roomApi.joinByInvite(accessToken, inviteToken);
+          setIsJoinModalOpen(false);
+          setJoinInput("");
+          router.push(`/room/${roomId}`);
+          return;
+        }
+      } else if (input.length === 64 && /^[a-f0-9]+$/.test(input)) {
+        await roomApi.joinByInvite(accessToken, input);
+        setIsJoinModalOpen(false);
+        setJoinInput("");
+        await fetchDashboard();
+        return;
+      } else {
+        roomId = input;
+      }
+
+      await roomApi.joinById(accessToken, roomId);
+      setIsJoinModalOpen(false);
+      setJoinInput("");
+      router.push(`/room/${roomId}`);
+    } catch (err) {
+      setJoinError(
+        err instanceof Error ? err.message : "Failed to join room",
+      );
+    } finally {
+      setJoining(false);
     }
   }
 
@@ -250,15 +304,30 @@ export default function DashboardPage() {
                     .
                   </p>
                 </div>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  className="font-black tracking-wider uppercase text-[11px] px-8 rounded-2xl"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  Start New Room
-                </Button>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="font-black tracking-wider uppercase text-[11px] px-8 rounded-2xl"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    <PlusCircle className="w-4 h-4" />
+                    Start New Room
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    className="font-black tracking-wider uppercase text-[11px] px-8 rounded-2xl"
+                    onClick={() => {
+                      setIsJoinModalOpen(true);
+                      setJoinError(null);
+                      setJoinInput("");
+                    }}
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    Join Room
+                  </Button>
+                </div>
               </div>
 
               <div className="flex gap-10 border-b border-border mb-10">
@@ -505,6 +574,67 @@ export default function DashboardPage() {
             label="Private Room"
             description="Only invited members can join"
           />
+        </Modal>
+
+        <Modal
+          isOpen={isJoinModalOpen}
+          onClose={() => setIsJoinModalOpen(false)}
+          title="Join a Room"
+          footer={
+            <>
+              <Button
+                variant="ghost"
+                size="md"
+                className="text-[11px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary"
+                onClick={() => {
+                  setIsJoinModalOpen(false);
+                  setJoinError(null);
+                }}
+                ariaLabel="Cancel joining room"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                size="md"
+                className="text-[11px] font-black uppercase tracking-widest"
+                ariaLabel="Join room"
+                onClick={handleJoinRoom}
+                disabled={joining || !joinInput.trim()}
+              >
+                {joining ? "Joining..." : "Join Room"}
+              </Button>
+            </>
+          }
+        >
+          {joinError && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4">
+              <p className="text-xs font-bold text-red-400">{joinError}</p>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+              Room ID or Invite Link
+            </label>
+            <input
+              type="text"
+              placeholder="Paste room ID, invite link, or invite token"
+              value={joinInput}
+              onChange={(e) => setJoinInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleJoinRoom();
+                }
+              }}
+              className="w-full h-11 bg-background/50 border border-border rounded-xl px-4 text-sm text-foreground focus:ring-1 focus:ring-primary/50 outline-none transition-all placeholder:text-foreground/20"
+              autoFocus
+            />
+            <p className="text-[10px] text-foreground/30 font-medium">
+              You can paste a full invite link, a standalone invite token, or a room ID to join public rooms directly.
+            </p>
+          </div>
         </Modal>
       </div>
     </ProtectedRoute>

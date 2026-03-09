@@ -150,7 +150,10 @@ export function useRoomSocket(roomId: string): UseRoomSocketReturn {
         refreshAttemptedRef.current = true;
         const newToken = await refreshAccessToken();
 
-        if (!newToken) {
+        if (newToken) {
+          cleanup();
+          connect(newToken);
+        } else {
           setConnectionStatus("error");
         }
       });

@@ -198,6 +198,13 @@ export const roomApi = {
       body: JSON.stringify({ token }),
     }),
 
+  joinById: (accessToken: string, roomId: string) =>
+    request<RoomMember>("/api/v1/rooms/join-by-id", {
+      method: "POST",
+      headers: authHeaders(accessToken),
+      body: JSON.stringify({ roomId }),
+    }),
+
   getRoomMembers: (accessToken: string, roomId: string) =>
     request<RoomMember[]>(`/api/v1/rooms/${roomId}/members`, {
       headers: authHeaders(accessToken),

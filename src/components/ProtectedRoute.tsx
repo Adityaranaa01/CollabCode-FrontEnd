@@ -19,7 +19,9 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.replace("/auth");
+      const currentPath = window.location.pathname;
+      const redirectParam = currentPath !== "/" ? `?redirect=${encodeURIComponent(currentPath)}` : "";
+      router.replace(`/auth${redirectParam}`);
     }
   }, [isAuthenticated, isLoading, router]);
 
