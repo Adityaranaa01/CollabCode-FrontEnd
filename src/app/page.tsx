@@ -242,12 +242,12 @@ export default function LandingPage() {
       </div>
 
       {/* --- Navbar --- */}
-      <div className="fixed top-12 left-0 right-0 z-[100] px-6 transition-all duration-300">
-        <nav className={`mx-auto max-w-fit flex items-center gap-8 py-2.5 px-6 rounded-full border border-border backdrop-blur-xl transition-all duration-500
+      <div className={`fixed transition-all duration-300 left-0 right-0 z-[100] px-4 md:px-6 ${scrolled ? 'top-2 md:top-4' : 'top-4 md:top-12'}`}>
+        <nav className={`mx-auto max-w-fit flex items-center gap-3 md:gap-8 py-2 md:py-2.5 px-4 md:px-6 rounded-full border border-border backdrop-blur-xl transition-all duration-500
           ${scrolled ? 'bg-background/80 shadow-lg scale-95' : 'bg-background/92'}`}>
-          <div className="flex items-center gap-2 pr-4 border-r border-border">
-            <div className="size-7 bg-primary rounded-md flex items-center justify-center font-black text-primary-foreground text-sm">C</div>
-            <span className="text-sm font-black tracking-tighter uppercase whitespace-nowrap text-foreground">CollabCode</span>
+          <div className="flex items-center gap-2 pr-3 md:pr-4 border-r border-border">
+            <div className="size-6 md:size-7 bg-primary rounded-md flex items-center justify-center font-black text-primary-foreground text-xs md:text-sm">C</div>
+            <span className="text-xs md:text-sm font-black tracking-tighter uppercase whitespace-nowrap text-foreground">CollabCode</span>
           </div>
           <div className="hidden md:flex gap-8 items-center text-xs font-bold uppercase tracking-widest text-foreground/60">
              <a href="#features" className="hover:text-primary transition-colors">Features</a>
@@ -259,14 +259,14 @@ export default function LandingPage() {
       </div>
 
       {/* --- Hero Section --- */}
-      <section className="relative z-10 pt-48 pb-32 px-12 min-h-screen flex flex-col items-center overflow-visible">
+      <section className="relative z-10 pt-40 md:pt-48 pb-20 md:pb-32 px-6 md:px-12 min-h-screen flex flex-col items-center overflow-visible">
         <div className="max-w-[1400px] w-full grid lg:grid-cols-2 gap-10 items-center">
           <div className="z-10">
             <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/12 text-[10px] font-bold text-primary uppercase tracking-[0.25em] mb-10">
               <span className="size-2 rounded-full bg-primary animate-pulse" />
               Engineered for Speed
             </div>
-            <h1 className="text-7xl md:text-[6.5rem] leading-[0.9] tracking-tight mb-12">
+            <h1 className="text-5xl md:text-7xl lg:text-[6.5rem] leading-[0.9] tracking-tight mb-10 md:mb-12">
               <span className="block font-normal text-foreground">Write code.</span>
               <span className="block italic text-foreground/80">In sync.</span>
               <span className="block font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Everywhere.</span>
