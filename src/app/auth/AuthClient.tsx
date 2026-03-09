@@ -40,13 +40,12 @@ export default function AuthPageClient() {
     }
   }, [searchParams]);
 
-  const redirectTo = searchParams.get("redirect") || "/dashboard";
-
+  // Redirect if already logged in
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace(redirectTo);
+      router.replace("/dashboard");
     }
-  }, [isAuthenticated, router, redirectTo]);
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +68,7 @@ export default function AuthPageClient() {
         }
         await register(email, username, password, displayName);
       }
-      router.push(redirectTo);
+      router.push("/dashboard");
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
