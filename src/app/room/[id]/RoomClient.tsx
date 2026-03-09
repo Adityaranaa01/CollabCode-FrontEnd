@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useRoomSocket } from "@/hooks/useRoomSocket";
-import { roomApi, Room, RoomMember } from "@/lib/api";
+import { roomApi, executionApi, Room, RoomMember, ExecutionResult } from "@/lib/api";
 import {
   getLanguageInfo,
   getMonacoLanguage,
@@ -43,7 +43,65 @@ import {
   Eye,
   EyeOff,
   GripVertical,
+  Play,
+  Terminal,
+  SquareX,
 } from "lucide-react";
+
+const EXECUTABLE_LANGUAGES = new Set([
+  "javascript", "typescript", "python", "java",
+  "go", "rust", "cpp", "csharp", "ruby", "php",
+]);
+
+const FRONTEND_LANGUAGES = new Set([
+  "html", "css", "javascript", "jsx",
+]);
+
+function generateSandboxHtml(code: string, language: string): string {
+  if (language === "html") {
+    return code;
+  }
+
+  if (language === "css") {
+    return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><style>${code}</style></head>
+<body><div id="root"><h1>CSS Preview</h1><p>Your styles are applied to this page.</p>
+<div class="container"><div class="box">Box 1</div><div class="box">Box 2</div><div class="box">Box 3</div></div>
+</div></body></html>`;
+  }
+
+  const isJSX = language === "jsx" || code.includes("React") || code.includes("<") && code.includes("/>");
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 1rem; }
+    #error-overlay { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; color: #ff6b6b; padding: 12px 16px; font-family: monospace; font-size: 12px; white-space: pre-wrap; display: none; border-top: 2px solid #ff6b6b; max-height: 30%; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <div id="error-overlay"></div>
+  <script>
+    window.onerror = function(msg, url, line, col, err) {
+      var el = document.getElementById('error-overlay');
+      el.style.display = 'block';
+      el.textContent = (err ? err.stack : msg);
+      return true;
+    };
+  </script>
+  <script type="text/${isJSX ? "babel" : "javascript"}">
+${code}
+  </script>
+</body>
+</html>`;
+}
 
 const AVATAR_COLORS = ["teal", "cyan", "emerald", "sky"] as const;
 
@@ -147,6 +205,10 @@ export default function RoomClient() {
   const [showPreview, setShowPreview] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
   const [panelWidth, setPanelWidth] = useState(320);
+  const [showTerminal, setShowTerminal] = useState(false);
+  const [terminalHeight, setTerminalHeight] = useState(200);
+  const [executionOutput, setExecutionOutput] = useState<ExecutionResult | null>(null);
+  const [isRunning, setIsRunning] = useState(false);
   const isDragging = useRef(false);
   const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -274,6 +336,46 @@ export default function RoomClient() {
     setPreviewContent(roomContent);
   }, [roomContent]);
 
+  const canExecute = EXECUTABLE_LANGUAGES.has(roomMeta?.language || "");
+  const isFrontend = FRONTEND_LANGUAGES.has(roomMeta?.language || "");
+  const canRun = canExecute || isFrontend;
+
+  async function handleRunCode() {
+    if (!editorRef.current || isRunning) return;
+    const code = editorRef.current.getValue();
+    if (!code.trim()) return;
+
+    const language = roomMeta?.language || "javascript";
+
+    if (FRONTEND_LANGUAGES.has(language)) {
+      const html = generateSandboxHtml(code, language);
+      setPreviewContent(html);
+      setShowPreview(true);
+      return;
+    }
+
+    if (!accessToken) return;
+    setIsRunning(true);
+    setShowTerminal(true);
+    setExecutionOutput(null);
+
+    try {
+      const result = await executionApi.run(accessToken, language, code);
+      setExecutionOutput(result);
+    } catch (err) {
+      setExecutionOutput({
+        stdout: null,
+        stderr: err instanceof Error ? err.message : "Execution failed",
+        compileOutput: null,
+        status: { id: -1, description: "Error" },
+        time: null,
+        memory: null,
+      });
+    } finally {
+      setIsRunning(false);
+    }
+  }
+
   function handleSendMessage() {
     const trimmed = chatInput.trim();
     if (!trimmed) return;
@@ -394,6 +496,21 @@ export default function RoomClient() {
               label="Shortcuts (Ctrl+Shift+?)"
               onClick={() => setShowShortcuts(true)}
             />
+            {canRun && (
+              <SidebarIcon
+                icon={Play}
+                label={isRunning ? "Running..." : (isFrontend ? "Run in Preview" : "Run Code")}
+                onClick={handleRunCode}
+              />
+            )}
+            {canExecute && (
+              <SidebarIcon
+                icon={Terminal}
+                label="Toggle Terminal"
+                active={showTerminal}
+                onClick={() => setShowTerminal((v) => !v)}
+              />
+            )}
           </aside>
 
           {/* Editor Area */}
@@ -411,7 +528,7 @@ export default function RoomClient() {
               <div className="flex-1" />
             </div>
 
-            <div className="flex-1 relative">
+            <div className="flex-1 relative min-h-0 overflow-hidden">
               {connectionStatus === "connecting" && (
                 <div className="absolute inset-0 flex items-center justify-center z-10 bg-background/60 backdrop-blur-sm">
                   <div className="flex flex-col items-center gap-3">
@@ -463,6 +580,116 @@ export default function RoomClient() {
                 }}
               />
             </div>
+
+            {showTerminal && (
+              <>
+                <div
+                  className="h-1 hover:h-1.5 bg-transparent hover:bg-primary/30 cursor-row-resize transition-all flex-shrink-0"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    const startY = e.clientY;
+                    const startH = terminalHeight;
+                    function onMouseMove(ev: MouseEvent) {
+                      const delta = startY - ev.clientY;
+                      setTerminalHeight(Math.min(500, Math.max(100, startH + delta)));
+                    }
+                    function onMouseUp() {
+                      document.removeEventListener("mousemove", onMouseMove);
+                      document.removeEventListener("mouseup", onMouseUp);
+                      document.body.style.cursor = "";
+                      document.body.style.userSelect = "";
+                    }
+                    document.addEventListener("mousemove", onMouseMove);
+                    document.addEventListener("mouseup", onMouseUp);
+                    document.body.style.cursor = "row-resize";
+                    document.body.style.userSelect = "none";
+                  }}
+                />
+                <div
+                  className="border-t border-border bg-[#1e1e1e] flex flex-col flex-shrink-0 overflow-hidden"
+                  style={{ height: terminalHeight }}
+                >
+                  <div className="h-8 flex items-center justify-between px-3 bg-card/50 border-b border-border flex-shrink-0">
+                    <div className="flex items-center gap-2">
+                      <Terminal className="w-3 h-3 text-foreground/40" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+                        Output
+                      </span>
+                      {executionOutput?.time && (
+                        <span className="text-[9px] font-bold text-foreground/30 ml-2">
+                          {executionOutput.time}s
+                        </span>
+                      )}
+                      {executionOutput?.memory && (
+                        <span className="text-[9px] font-bold text-foreground/30">
+                          {Math.round(executionOutput.memory)}KB
+                        </span>
+                      )}
+                      {executionOutput?.status && (
+                        <span className={`text-[9px] font-bold ml-1 ${
+                          executionOutput.status.id === 3 ? "text-emerald-400" : "text-red-400"
+                        }`}>
+                          {executionOutput.status.description}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {canExecute && (
+                        <button
+                          onClick={handleRunCode}
+                          disabled={isRunning}
+                          className="p-1 rounded hover:bg-foreground/10 transition-colors cursor-pointer disabled:opacity-40"
+                          title="Run (Ctrl+Enter)"
+                        >
+                          {isRunning ? (
+                            <Loader2 className="w-3 h-3 text-primary animate-spin" />
+                          ) : (
+                            <Play className="w-3 h-3 text-emerald-400" />
+                          )}
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setExecutionOutput(null)}
+                        className="p-1 rounded hover:bg-foreground/10 transition-colors cursor-pointer"
+                        title="Clear output"
+                      >
+                        <SquareX className="w-3 h-3 text-foreground/40" />
+                      </button>
+                      <button
+                        onClick={() => setShowTerminal(false)}
+                        className="p-1 rounded hover:bg-foreground/10 transition-colors cursor-pointer"
+                        title="Close terminal"
+                      >
+                        <X className="w-3 h-3 text-foreground/40" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-3 font-mono text-xs leading-relaxed custom-scrollbar">
+                    {isRunning && (
+                      <div className="flex items-center gap-2 text-foreground/40">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <span>Running...</span>
+                      </div>
+                    )}
+                    {!isRunning && !executionOutput && (
+                      <span className="text-foreground/20">Press Run or Ctrl+Enter to execute code.</span>
+                    )}
+                    {executionOutput?.compileOutput && (
+                      <pre className="text-yellow-400 whitespace-pre-wrap break-all mb-2">{executionOutput.compileOutput}</pre>
+                    )}
+                    {executionOutput?.stderr && (
+                      <pre className="text-red-400 whitespace-pre-wrap break-all mb-2">{executionOutput.stderr}</pre>
+                    )}
+                    {executionOutput?.stdout && (
+                      <pre className="text-emerald-300 whitespace-pre-wrap break-all">{executionOutput.stdout}</pre>
+                    )}
+                    {executionOutput && !executionOutput.stdout && !executionOutput.stderr && !executionOutput.compileOutput && (
+                      <span className="text-foreground/30">No output.</span>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="h-7 border-t border-border bg-card flex items-center px-3 justify-between text-[10px] text-foreground/40 font-medium select-none">
               <div className="flex items-center gap-3">
@@ -563,7 +790,7 @@ export default function RoomClient() {
                   <iframe
                     title="Live Preview"
                     className="w-full h-full border-0"
-                    sandbox="allow-scripts allow-modals"
+                    sandbox="allow-scripts allow-same-origin"
                     srcDoc={previewContent || ""}
                   />
                 </div>

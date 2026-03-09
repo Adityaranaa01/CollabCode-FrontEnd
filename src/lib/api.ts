@@ -160,7 +160,7 @@ export const roomApi = {
 
   createRoom: (
     accessToken: string,
-    data: { name: string; language: string; isPublic?: boolean }
+    data: { name: string; language: string; isPublic?: boolean; initialContent?: string }
   ) =>
     request<Room>("/api/v1/rooms", {
       method: "POST",
@@ -218,6 +218,29 @@ export const roomApi = {
         headers: authHeaders(accessToken),
       }
     ),
+};
+
+export interface ExecutionResult {
+  stdout: string | null;
+  stderr: string | null;
+  compileOutput: string | null;
+  status: { id: number; description: string };
+  time: string | null;
+  memory: number | null;
+}
+
+export const executionApi = {
+  run: (
+    accessToken: string,
+    language: string,
+    sourceCode: string,
+    stdin?: string
+  ) =>
+    request<ExecutionResult>("/api/v1/execute", {
+      method: "POST",
+      headers: authHeaders(accessToken),
+      body: JSON.stringify({ language, sourceCode, stdin }),
+    }),
 };
 
 export { ApiError };

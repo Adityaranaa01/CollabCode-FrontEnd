@@ -14,7 +14,125 @@ import {
   Button,
   ThemeToggle,
 } from "@/components";
-import { Search, PlusCircle, ChevronDown, LogOut, Loader2, UserPlus } from "lucide-react";
+import { Search, PlusCircle, ChevronDown, LogOut, Loader2, UserPlus, Globe, Atom, FileCode, Braces, Server } from "lucide-react";
+
+const TEMPLATES = [
+  {
+    label: "HTML Starter",
+    lang: "html",
+    name: "HTML Project",
+    icon: Globe,
+    boilerplate: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Page</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hello World</h1>
+  <p>Start building your page here.</p>
+</body>
+</html>`,
+  },
+  {
+    label: "React Component",
+    lang: "javascript",
+    name: "React Component",
+    icon: Atom,
+    boilerplate: `function App() {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div style={{ padding: "2rem", fontFamily: "system-ui" }}>
+      <h1>React Counter</h1>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>{" "}
+      <button onClick={() => setCount(0)}>Reset</button>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);`,
+  },
+  {
+    label: "Python Script",
+    lang: "python",
+    name: "Python Script",
+    icon: FileCode,
+    boilerplate: `def greet(name: str) -> str:
+    return f"Hello, {name}!"
+
+def main():
+    names = ["Alice", "Bob", "Charlie"]
+    for name in names:
+        print(greet(name))
+
+if __name__ == "__main__":
+    main()`,
+  },
+  {
+    label: "TypeScript",
+    lang: "typescript",
+    name: "TypeScript Module",
+    icon: Braces,
+    boilerplate: `interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+function createUser(name: string, email: string): User {
+  return { id: Date.now(), name, email };
+}
+
+const user = createUser("Alice", "alice@example.com");
+console.log(user);`,
+  },
+  {
+    label: "REST API",
+    lang: "javascript",
+    name: "REST API",
+    icon: Server,
+    boilerplate: `const http = require("http");
+const url = require("url");
+
+const items = [];
+
+function handleRequest(req, res) {
+  const parsed = url.parse(req.url, true);
+  res.setHeader("Content-Type", "application/json");
+
+  if (parsed.pathname === "/api/items" && req.method === "GET") {
+    res.end(JSON.stringify(items));
+  } else if (parsed.pathname === "/api/items" && req.method === "POST") {
+    let body = "";
+    req.on("data", (chunk) => body += chunk);
+    req.on("end", () => {
+      const item = { id: Date.now(), ...JSON.parse(body) };
+      items.push(item);
+      res.statusCode = 201;
+      res.end(JSON.stringify(item));
+    });
+  } else {
+    res.statusCode = 404;
+    res.end(JSON.stringify({ error: "Not found" }));
+  }
+}
+
+const server = http.createServer(handleRequest);
+console.log("REST API server created with /api/items endpoint");
+console.log("Methods: GET /api/items, POST /api/items");`,
+  },
+];
 
 const GRADIENTS = [
   "from-primary/20 to-accent/20",
@@ -51,6 +169,7 @@ export default function DashboardPage() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
 
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [joinInput, setJoinInput] = useState("");
@@ -93,15 +212,18 @@ export default function DashboardPage() {
     setCreating(true);
     setCreateError(null);
     try {
+      const initialContent = selectedTemplate !== null ? TEMPLATES[selectedTemplate].boilerplate : "";
       await roomApi.createRoom(accessToken, {
         name: roomName.trim(),
         language: roomLanguage,
         isPublic: !isPrivate,
+        initialContent,
       });
       setIsModalOpen(false);
       setRoomName("");
       setRoomLanguage("typescript");
       setIsPrivate(false);
+      setSelectedTemplate(null);
       await fetchDashboard();
     } catch (err) {
       setCreateError(
@@ -489,35 +611,34 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Template quick picks */}
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
               Start from Template
             </label>
             <div className="flex flex-wrap gap-2">
-              {[
-                { label: "HTML Starter", lang: "html", name: "HTML Project" },
-                { label: "React Component", lang: "javascript", name: "React Component" },
-                { label: "Python Script", lang: "python", name: "Python Script" },
-                { label: "TypeScript", lang: "typescript", name: "TypeScript Module" },
-                { label: "REST API", lang: "javascript", name: "REST API" },
-              ].map((t) => (
-                <button
-                  key={t.label}
-                  type="button"
-                  onClick={() => {
-                    setRoomName(t.name);
-                    setRoomLanguage(t.lang);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all cursor-pointer ${
-                    roomName === t.name && roomLanguage === t.lang
-                      ? "bg-primary/10 border-primary/30 text-primary"
-                      : "bg-foreground/[0.03] border-border text-foreground/50 hover:bg-foreground/[0.06] hover:text-foreground/70"
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
+              {TEMPLATES.map((t, i) => {
+                const Icon = t.icon;
+                const isSelected = selectedTemplate === i;
+                return (
+                  <button
+                    key={t.label}
+                    type="button"
+                    onClick={() => {
+                      setSelectedTemplate(isSelected ? null : i);
+                      setRoomName(isSelected ? "" : t.name);
+                      setRoomLanguage(isSelected ? "typescript" : t.lang);
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-primary/10 border-primary/30 text-primary"
+                        : "bg-foreground/[0.03] border-border text-foreground/50 hover:bg-foreground/[0.06] hover:text-foreground/70"
+                    }`}
+                  >
+                    <Icon className="w-3 h-3" />
+                    {t.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
